@@ -1,6 +1,6 @@
-# Machine Learning Project Template
+# One
 
-A batteries-included template for PyTorch machine learning projects using Lightning, wandb, and modern Python tooling.
+A batteries-included library for PyTorch machine learning projects using Lightning, wandb, and modern Python tooling.
 
 ## Features
 
@@ -15,7 +15,7 @@ A batteries-included template for PyTorch machine learning projects using Lightn
 
 ```
 .
-├── src/template/
+├── src/one/
 │   ├── config.py              # Pydantic configuration classes
 │   ├── lightning_module.py    # Base Lightning module
 │   ├── datasets/              # Dataset implementations
@@ -36,28 +36,21 @@ A batteries-included template for PyTorch machine learning projects using Lightn
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### 2. Use this template for a new project
-
-When creating a new project from this template:
-
-1. Clone or fork this repository
-2. Rename the `src/template` directory to your project name:
-   ```bash
-   mv src/template src/your_project_name
-   ```
-3. Update `pyproject.toml`:
-   - Change `name = "template"` to your project name
-   - Update `module-name = ["template"]` to your project name
-   - Update the `train` script path in `[project.scripts]`
-4. Update import statements in Python files to use your new project name
-
-### 3. Install dependencies
+### 2. Install the library
 
 ```bash
+pip install one
+```
+
+Or for development, clone this repository and install in editable mode:
+
+```bash
+git clone https://github.com/will-rice/one
+cd one
 uv sync
 ```
 
-### 4. Set up environment variables
+### 3. Set up environment variables
 
 Copy the example environment file and add your API keys:
 
@@ -66,7 +59,7 @@ cp .env.example .env
 # Edit .env and add your wandb API key and other credentials
 ```
 
-### 5. Install pre-commit hooks
+### 4. Install pre-commit hooks
 
 ```bash
 uv run pre-commit install
@@ -96,7 +89,7 @@ Available arguments:
 
 ### Configuration
 
-Edit `src/template/config.py` to customize hyperparameters:
+Edit `src/one/config.py` to customize hyperparameters:
 
 ```python
 from pydantic import BaseModel
@@ -122,7 +115,7 @@ class Config(BaseModel):
 1. **Create your Lightning module** by inheriting from `BaseLightningModule`:
 
    ```python
-   from template.lightning_module import BaseLightningModule
+   from one.lightning_module import BaseLightningModule
 
    class MyModel(BaseLightningModule):
        def training_step(self, batch, batch_idx):
@@ -134,7 +127,7 @@ class Config(BaseModel):
            pass
    ```
 
-2. **Add your dataset** in `src/template/datasets/`:
+2. **Add your dataset** in `src/one/datasets/`:
 
    ```python
    from torch.utils.data import Dataset
