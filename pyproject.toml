@@ -1,5 +1,5 @@
 [project]
-name = "one-llm"
+name = "one-llm-lib"
 version = "0.1.0"
 description = "A clean, minimalist library for using multiple LLM providers with structured outputs."
 readme = "README.md"
