@@ -27,6 +27,20 @@ jobs:
       - name: Install uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-      - name: Run pre-commit hook
+      
+      - name: Install dependencies
+        run: |
+          uv sync --dev
+      
+      - name: Run pre-commit hooks
         run: |
           uv run pre-commit run -a
+      
+      - name: Run tests
+        run: |
+          uv run pytest
+      
+      - name: Verify library works without dev dependencies
+        run: |
+          uv sync --no-dev
+          uv run python -c "from one import Model; print('Library imports successfully')"
