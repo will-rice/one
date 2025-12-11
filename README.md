@@ -1,151 +1,188 @@
-# Machine Learning Project Template
+# One
 
-A batteries-included template for PyTorch machine learning projects using Lightning, wandb, and modern Python tooling.
+A clean, minimalist library for using multiple LLM providers with structured outputs.
 
 ## Features
 
-- **PyTorch Lightning**: Structured training framework with minimal boilerplate
-- **Pydantic Configuration**: Type-safe configuration management
-- **Weights & Biases**: Integrated experiment tracking
-- **Modern Tooling**: Built with `uv` for fast dependency management
-- **Code Quality**: Pre-configured with `ruff`, `mypy`, `pytest`, and `pre-commit` hooks
-- **Git-based Versioning**: Automatic experiment naming using git commit hashes
+- **Multiple Providers**: Support for OpenAI and Anthropic with a unified interface
+- **Structured Outputs**: First-class support for structured outputs using Pydantic models
+- **Type Safe**: Full type hints and runtime validation with Pydantic
+- **Simple API**: Intuitive interface with sensible defaults
+- **Extensible**: Easy to add new providers
+- **Well Tested**: Comprehensive test suite with >95% coverage
 
-## Project Structure
+## Installation
 
+```bash
+pip install one
 ```
-.
-├── src/template/
-│   ├── config.py              # Pydantic configuration classes
-│   ├── lightning_module.py    # Base Lightning module
-│   ├── datasets/              # Dataset implementations
-│   ├── modeling/              # Model architectures
-│   └── scripts/
-│       └── train.py          # Training script
-├── tests/                     # Test files
-├── pyproject.toml            # Project metadata and dependencies
-├── .pre-commit-config.yaml   # Pre-commit hooks configuration
-└── .env.example              # Example environment variables
+
+Or with development dependencies:
+
+```bash
+pip install one[dev]
 ```
 
 ## Quick Start
 
-### 1. Install uv
+### Basic Text Generation
 
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+```python
+from one import Model
+
+# Using OpenAI
+model = Model(provider="openai")
+response = model.generate("What is the capital of France?")
+print(response)  # "Paris"
+
+# Using Anthropic
+model = Model(provider="anthropic")
+response = model.generate("What is the capital of France?")
+print(response)  # "Paris"
 ```
 
-### 2. Use this template for a new project
+### Structured Outputs
 
-When creating a new project from this template:
+```python
+from one import Model
+from pydantic import BaseModel
 
-1. Clone or fork this repository
-2. Rename the `src/template` directory to your project name:
-   ```bash
-   mv src/template src/your_project_name
-   ```
-3. Update `pyproject.toml`:
-   - Change `name = "template"` to your project name
-   - Update `module-name = ["template"]` to your project name
-   - Update the `train` script path in `[project.scripts]`
-4. Update import statements in Python files to use your new project name
+class Person(BaseModel):
+    name: str
+    age: int
+    occupation: str
 
-### 3. Install dependencies
+model = Model(provider="openai")
+person = model.generate_structured(
+    prompt="Extract information: John is 30 years old and works as a software engineer",
+    response_format=Person
+)
 
-```bash
-uv sync
+print(person.name)  # "John"
+print(person.age)   # 30
+print(person.occupation)  # "software engineer"
 ```
 
-### 4. Set up environment variables
+## Setup
 
-Copy the example environment file and add your API keys:
+### Environment Variables
+
+Set your API keys as environment variables:
+
+```bash
+export OPENAI_API_KEY="your-openai-key"
+export ANTHROPIC_API_KEY="your-anthropic-key"
+```
+
+Or create a `.env` file:
 
 ```bash
 cp .env.example .env
-# Edit .env and add your wandb API key and other credentials
+# Edit .env and add your API keys
 ```
 
-### 5. Install pre-commit hooks
+### Advanced Usage
 
-```bash
-uv run pre-commit install
+#### Custom Model Selection
+
+```python
+# Use a specific OpenAI model
+model = Model(provider="openai")
+response = model.generate(
+    prompt="Explain quantum computing",
+    model="gpt-4",
+    temperature=0.5,
+    max_tokens=500
+)
+
+# Use a specific Anthropic model
+model = Model(provider="anthropic")
+response = model.generate(
+    prompt="Explain quantum computing",
+    model="claude-3-opus-20240229",
+    temperature=0.5,
+    max_tokens=500
+)
 ```
 
-## Usage
-
-### Training
-
-Run the training script:
-
-```bash
-uv run train <data_root> --project my-project --num_devices 1
-```
-
-Available arguments:
-
-- `data_root`: Path to your dataset (required)
-- `--project`: Wandb project name (default: "jigsaw-2025")
-- `--num_devices`: Number of GPUs to use (default: 1)
-- `--num_workers`: Number of data loading workers (default: 12)
-- `--log_root`: Directory for logs and checkpoints (default: "logs")
-- `--checkpoint_path`: Resume from checkpoint
-- `--weights_path`: Load model weights
-- `--debug`: Enable debug mode
-- `--fast_dev_run`: Run a quick test with minimal data
-
-### Configuration
-
-Edit `src/template/config.py` to customize hyperparameters:
+#### Complex Structured Outputs
 
 ```python
 from pydantic import BaseModel
+from typing import List
 
-class Config(BaseModel):
-    # Reproducibility
-    seed: int = 42
+class Task(BaseModel):
+    title: str
+    priority: str
+    estimated_hours: float
 
-    # Data
-    test_split: float = 0.1
-    batch_size: int = 16
+class Project(BaseModel):
+    name: str
+    description: str
+    tasks: List[Task]
 
-    # Training
-    max_epochs: int = 200
-    early_stopping_patience: int = 30
-    learning_rate: float = 1e-4
-    min_learning_rate: float = 1e-6
-    weight_decay: float = 1e-2
+model = Model(provider="openai")
+project = model.generate_structured(
+    prompt="""
+    Create a project plan for building a web application:
+    - User authentication
+    - Database design
+    - API development
+    - Frontend implementation
+    """,
+    response_format=Project,
+    model="gpt-4o-mini"
+)
+
+for task in project.tasks:
+    print(f"{task.title}: {task.estimated_hours}h ({task.priority})")
 ```
 
-### Implementing Your Model
+## Architecture
 
-1. **Create your Lightning module** by inheriting from `BaseLightningModule`:
+### Adding New Providers
 
-   ```python
-   from template.lightning_module import BaseLightningModule
+The library is designed to be easily extensible. To add a new provider:
 
-   class MyModel(BaseLightningModule):
-       def training_step(self, batch, batch_idx):
-           # Your training logic here
-           pass
+1. Create a new file in `src/one/providers/` (e.g., `src/one/providers/cohere.py`)
+2. Implement the `Provider` protocol:
 
-       def validation_step(self, batch, batch_idx):
-           # Your validation logic here
-           pass
-   ```
+```python
+from one.providers.base import Provider
+from pydantic import BaseModel
+from typing import Type, Any
 
-2. **Add your dataset** in `src/template/datasets/`:
+class CohereProvider:
+    def __init__(self, api_key: str | None = None) -> None:
+        # Initialize your provider client
+        pass
+    
+    def generate(
+        self,
+        prompt: str,
+        model: str,
+        temperature: float = 0.7,
+        max_tokens: int | None = None,
+        **kwargs: Any,
+    ) -> str:
+        # Implement text generation
+        pass
+    
+    def generate_structured(
+        self,
+        prompt: str,
+        model: str,
+        response_format: Type[BaseModel],
+        temperature: float = 0.7,
+        max_tokens: int | None = None,
+        **kwargs: Any,
+    ) -> BaseModel:
+        # Implement structured output generation
+        pass
+```
 
-   ```python
-   from torch.utils.data import Dataset
-
-   class MyDataset(Dataset):
-       def __init__(self, data_root, config):
-           # Initialize your dataset
-           pass
-   ```
-
-3. **Update the training script** to use your model and dataset
+3. Add the provider to `src/one/client.py` in the `Model.__init__` method
+4. Update the `ProviderType` literal with the new provider name
 
 ## Development
 
@@ -203,20 +240,37 @@ To build the project:
 uv build
 ```
 
+## Why "One"?
+
+One library to rule them all. One interface for multiple LLM providers.
+
 ## License
 
 See [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Ensure all tests pass and pre-commit hooks succeed
-4. Submit a pull request
+Contributions are welcome! Please:
 
-## Tips
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass and code quality checks succeed
+6. Submit a pull request
 
-- Experiment names automatically include the git commit hash for reproducibility
-- Use `.env` for sensitive information (API keys, credentials)
-- The config system uses Pydantic for type safety and validation
-- Lightning automatically handles distributed training, gradient accumulation, and mixed precision
+## Supported Providers
+
+| Provider | Status | Structured Outputs | Default Model |
+|----------|--------|-------------------|---------------|
+| OpenAI | ✅ Supported | ✅ Native | gpt-4o-mini |
+| Anthropic | ✅ Supported | ✅ JSON Schema | claude-3-5-sonnet-20241022 |
+
+## Roadmap
+
+- [ ] Add support for streaming responses
+- [ ] Add support for async/await
+- [ ] Add more providers (Google, Cohere, etc.)
+- [ ] Add token counting utilities
+- [ ] Add retry logic and rate limiting
+- [ ] Add cost estimation
