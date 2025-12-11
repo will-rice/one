@@ -32,7 +32,7 @@ def main() -> None:
     print("\n2. Structured output with OpenAI:")
     print("-" * 50)
     try:
-        person = model.generate_structured(
+        person = model.generate(
             prompt="Extract person info: John is 30 years old and works as a software engineer",
             response_format=Person,
         )
@@ -58,7 +58,7 @@ def main() -> None:
     print("\n4. Structured output with Anthropic:")
     print("-" * 50)
     try:
-        person = model_anthropic.generate_structured(
+        person = model_anthropic.generate(
             prompt="Extract person info: Jane is 25 years old and works as a data scientist",
             response_format=Person,
         )

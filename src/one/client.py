@@ -56,7 +56,7 @@ class Model:
             age: int
 
         model = Model(model="gpt-4o-mini")
-        person = model.generate_structured(
+        person = model.generate(
             "Extract person info: John is 30 years old",
             response_format=Person
         )
@@ -93,49 +93,26 @@ class Model:
     def generate(
         self,
         prompt: str,
+        response_format: Type[BaseModel] | None = None,
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
-    ) -> str:
-        """Generate a text completion.
+    ) -> str | BaseModel:
+        """Generate a completion with optional structured output.
 
         Args:
             prompt: The input prompt
+            response_format: Optional Pydantic model class for structured output.
+                If None, returns plain text. If provided, returns structured model.
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate
             **kwargs: Additional provider-specific parameters
 
         Returns:
-            Generated text
+            Generated text (str) if response_format is None,
+            or instance of the response_format model if provided
         """
         return self._provider.generate(
-            prompt=prompt,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            **kwargs,
-        )
-
-    def generate_structured(
-        self,
-        prompt: str,
-        response_format: Type[BaseModel],
-        temperature: float = 0.7,
-        max_tokens: int | None = None,
-        **kwargs: Any,
-    ) -> BaseModel:
-        """Generate a structured output using a Pydantic model.
-
-        Args:
-            prompt: The input prompt
-            response_format: Pydantic model class for structured output
-            temperature: Sampling temperature (0-1)
-            max_tokens: Maximum tokens to generate
-            **kwargs: Additional provider-specific parameters
-
-        Returns:
-            Instance of the response_format model with parsed data
-        """
-        return self._provider.generate_structured(
             prompt=prompt,
             response_format=response_format,
             temperature=temperature,

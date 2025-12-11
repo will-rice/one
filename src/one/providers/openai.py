@@ -33,56 +33,43 @@ class OpenAIProvider(Provider):
     def generate(
         self,
         prompt: str,
+        response_format: Type[BaseModel] | None = None,
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
-    ) -> str:
-        """Generate a text completion.
+    ) -> str | BaseModel:
+        """Generate a completion with optional structured output.
 
         Args:
             prompt: The input prompt
+            response_format: Optional Pydantic model class for structured output.
+                If None, returns plain text. If provided, returns structured model.
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate
             **kwargs: Additional OpenAI-specific parameters
 
         Returns:
-            Generated text
+            Generated text (str) if response_format is None,
+            or instance of the response_format model if provided
         """
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            max_tokens=max_tokens,
-            **kwargs,
-        )
-        return response.choices[0].message.content or ""
-
-    def generate_structured(
-        self,
-        prompt: str,
-        response_format: Type[BaseModel],
-        temperature: float = 0.7,
-        max_tokens: int | None = None,
-        **kwargs: Any,
-    ) -> BaseModel:
-        """Generate a structured output using a Pydantic model.
-
-        Args:
-            prompt: The input prompt
-            response_format: Pydantic model class for structured output
-            temperature: Sampling temperature (0-1)
-            max_tokens: Maximum tokens to generate
-            **kwargs: Additional OpenAI-specific parameters
-
-        Returns:
-            Instance of the response_format model with parsed data
-        """
-        completion = self.client.beta.chat.completions.parse(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            response_format=response_format,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            **kwargs,
-        )
-        return completion.choices[0].message.parsed  # type: ignore[return-value]
+        if response_format is None:
+            # Plain text generation
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=temperature,
+                max_tokens=max_tokens,
+                **kwargs,
+            )
+            return response.choices[0].message.content or ""
+        else:
+            # Structured output generation
+            completion = self.client.beta.chat.completions.parse(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                response_format=response_format,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                **kwargs,
+            )
+            return completion.choices[0].message.parsed  # type: ignore[return-value]

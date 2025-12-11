@@ -53,7 +53,7 @@ class Person(BaseModel):
     occupation: str
 
 model = Model(model="gpt-4o-mini")
-person = model.generate_structured(
+person = model.generate(
     prompt="Extract information: John is 30 years old and works as a software engineer",
     response_format=Person
 )
@@ -122,7 +122,7 @@ class Project(BaseModel):
     tasks: List[Task]
 
 model = Model(model="gpt-4o-mini")
-project = model.generate_structured(
+project = model.generate(
     prompt="""
     Create a project plan for building a web application:
     - User authentication
@@ -149,7 +149,7 @@ The library is designed to be easily extensible. To add a new provider:
 ```python
 from one.providers.base import Provider
 from pydantic import BaseModel
-from typing import Type, Any
+from typing import Type, Any, Union
 
 class CohereProvider(Provider):
     def __init__(self, model: str, api_key: str | None = None) -> None:
@@ -160,22 +160,14 @@ class CohereProvider(Provider):
     def generate(
         self,
         prompt: str,
+        response_format: Type[BaseModel] | None = None,
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
-    ) -> str:
-        # Implement text generation using self.model
-        pass
-    
-    def generate_structured(
-        self,
-        prompt: str,
-        response_format: Type[BaseModel],
-        temperature: float = 0.7,
-        max_tokens: int | None = None,
-        **kwargs: Any,
-    ) -> BaseModel:
-        # Implement structured output generation using self.model
+    ) -> str | BaseModel:
+        # If response_format is None, return plain text
+        # If response_format is provided, return structured model
+        # Implementation using self.model
         pass
 ```
 

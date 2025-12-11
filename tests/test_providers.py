@@ -91,7 +91,7 @@ class TestOpenAIProvider:
 
         # Test
         provider = OpenAIProvider(model="gpt-4o-mini", api_key="test-key")
-        result = provider.generate_structured(
+        result = provider.generate(
             "Extract: John is 30",
             response_format=Person,
         )
@@ -184,7 +184,7 @@ class TestAnthropicProvider:
         provider = AnthropicProvider(
             model="claude-3-5-sonnet-20241022", api_key="test-key"
         )
-        result = provider.generate_structured(
+        result = provider.generate(
             "Extract: John is 30",
             response_format=Person,
         )

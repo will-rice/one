@@ -84,6 +84,7 @@ class TestModel:
         assert result == "Paris"
         mock_provider.generate.assert_called_once_with(
             prompt="What is the capital of France?",
+            response_format=None,
             temperature=0.7,
             max_tokens=None,
         )
@@ -101,6 +102,7 @@ class TestModel:
         assert result == "Paris"
         mock_provider.generate.assert_called_once_with(
             prompt="What is the capital of France?",
+            response_format=None,
             temperature=0.7,
             max_tokens=None,
         )
@@ -122,6 +124,7 @@ class TestModel:
         assert result == "Response"
         mock_provider.generate.assert_called_once_with(
             prompt="Test prompt",
+            response_format=None,
             temperature=0.5,
             max_tokens=100,
         )
@@ -131,11 +134,11 @@ class TestModel:
         """Test structured generation with OpenAI."""
         mock_provider = MagicMock()
         mock_person = Person(name="John", age=30)
-        mock_provider.generate_structured.return_value = mock_person
+        mock_provider.generate.return_value = mock_person
         mock_provider_class.return_value = mock_provider
 
         model = Model(model="gpt-4o-mini")
-        result = model.generate_structured(
+        result = model.generate(
             "Extract: John is 30",
             response_format=Person,
         )
@@ -143,7 +146,7 @@ class TestModel:
         assert isinstance(result, Person)
         assert result.name == "John"
         assert result.age == 30
-        mock_provider.generate_structured.assert_called_once_with(
+        mock_provider.generate.assert_called_once_with(
             prompt="Extract: John is 30",
             response_format=Person,
             temperature=0.7,
@@ -155,11 +158,11 @@ class TestModel:
         """Test structured generation with Anthropic."""
         mock_provider = MagicMock()
         mock_person = Person(name="Jane", age=25)
-        mock_provider.generate_structured.return_value = mock_person
+        mock_provider.generate.return_value = mock_person
         mock_provider_class.return_value = mock_provider
 
         model = Model(model="claude-3-5-sonnet-20241022")
-        result = model.generate_structured(
+        result = model.generate(
             "Extract: Jane is 25",
             response_format=Person,
         )
@@ -167,7 +170,7 @@ class TestModel:
         assert isinstance(result, Person)
         assert result.name == "Jane"
         assert result.age == 25
-        mock_provider.generate_structured.assert_called_once_with(
+        mock_provider.generate.assert_called_once_with(
             prompt="Extract: Jane is 25",
             response_format=Person,
             temperature=0.7,
@@ -181,11 +184,11 @@ class TestModel:
         """Test structured generation with custom parameters."""
         mock_provider = MagicMock()
         mock_person = Person(name="Bob", age=40)
-        mock_provider.generate_structured.return_value = mock_person
+        mock_provider.generate.return_value = mock_person
         mock_provider_class.return_value = mock_provider
 
         model = Model(model="gpt-4")
-        result = model.generate_structured(
+        result = model.generate(
             "Extract person",
             response_format=Person,
             temperature=0.3,
@@ -193,7 +196,7 @@ class TestModel:
         )
 
         assert isinstance(result, Person)
-        mock_provider.generate_structured.assert_called_once_with(
+        mock_provider.generate.assert_called_once_with(
             prompt="Extract person",
             response_format=Person,
             temperature=0.3,
