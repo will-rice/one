@@ -6,8 +6,10 @@ from typing import Any, Type
 from openai import OpenAI
 from pydantic import BaseModel
 
+from one.providers.base import Provider
 
-class OpenAIProvider:
+
+class OpenAIProvider(Provider):
     """OpenAI provider for text generation and structured outputs.
 
     This provider uses the OpenAI API to generate completions.

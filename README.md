@@ -144,14 +144,14 @@ for task in project.tasks:
 The library is designed to be easily extensible. To add a new provider:
 
 1. Create a new file in `src/one/providers/` (e.g., `src/one/providers/cohere.py`)
-2. Implement the `Provider` protocol:
+2. Inherit from the `Provider` abstract base class:
 
 ```python
 from one.providers.base import Provider
 from pydantic import BaseModel
 from typing import Type, Any
 
-class CohereProvider:
+class CohereProvider(Provider):
     def __init__(self, api_key: str | None = None) -> None:
         # Initialize your provider client
         pass

@@ -1,17 +1,19 @@
-"""Base provider protocol."""
+"""Base provider abstract class."""
 
-from typing import Any, Protocol, Type
+from abc import ABC, abstractmethod
+from typing import Any, Type
 
 from pydantic import BaseModel
 
 
-class Provider(Protocol):
-    """Protocol defining the interface for LLM providers.
+class Provider(ABC):
+    """Abstract base class defining the interface for LLM providers.
 
-    This protocol ensures all providers implement the required methods
+    This ABC ensures all providers implement the required methods
     for generating completions with structured outputs.
     """
 
+    @abstractmethod
     def generate(
         self,
         prompt: str,
@@ -34,6 +36,7 @@ class Provider(Protocol):
         """
         ...
 
+    @abstractmethod
     def generate_structured(
         self,
         prompt: str,

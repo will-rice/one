@@ -7,8 +7,10 @@ from typing import Any, Type
 from anthropic import Anthropic
 from pydantic import BaseModel
 
+from one.providers.base import Provider
 
-class AnthropicProvider:
+
+class AnthropicProvider(Provider):
     """Anthropic provider for text generation and structured outputs.
 
     This provider uses the Anthropic Claude API to generate completions.
