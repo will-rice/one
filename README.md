@@ -74,12 +74,14 @@ export OPENAI_API_KEY="your-openai-key"
 export ANTHROPIC_API_KEY="your-anthropic-key"
 ```
 
-Or create a `.env` file:
+Or create a `.env` file (automatically loaded by the library):
 
 ```bash
 cp .env.example .env
 # Edit .env and add your API keys
 ```
+
+The library uses `python-dotenv` to automatically load environment variables from a `.env` file in your project root.
 
 ### Advanced Usage
 
@@ -217,6 +219,7 @@ Core dependencies:
 - **openai**: OpenAI API client
 - **anthropic**: Anthropic API client
 - **pydantic**: Data validation and type safety
+- **python-dotenv**: Load environment variables from .env files
 
 Development tools:
 
