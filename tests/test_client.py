@@ -52,7 +52,7 @@ class TestModel:
         """Test initialization with OpenAI model."""
         with patch("one.client.OpenAIProvider") as mock_openai:
             model = Model(model="gpt-4o-mini", api_key="test-key")
-            mock_openai.assert_called_once_with(api_key="test-key")
+            mock_openai.assert_called_once_with(model="gpt-4o-mini", api_key="test-key")
             assert model.provider_name == "openai"
             assert model.model == "gpt-4o-mini"
 
@@ -60,7 +60,9 @@ class TestModel:
         """Test initialization with Anthropic model."""
         with patch("one.client.AnthropicProvider") as mock_anthropic:
             model = Model(model="claude-3-5-sonnet-20241022", api_key="test-key")
-            mock_anthropic.assert_called_once_with(api_key="test-key")
+            mock_anthropic.assert_called_once_with(
+                model="claude-3-5-sonnet-20241022", api_key="test-key"
+            )
             assert model.provider_name == "anthropic"
             assert model.model == "claude-3-5-sonnet-20241022"
 
@@ -82,7 +84,6 @@ class TestModel:
         assert result == "Paris"
         mock_provider.generate.assert_called_once_with(
             prompt="What is the capital of France?",
-            model="gpt-4o-mini",
             temperature=0.7,
             max_tokens=None,
         )
@@ -100,7 +101,6 @@ class TestModel:
         assert result == "Paris"
         mock_provider.generate.assert_called_once_with(
             prompt="What is the capital of France?",
-            model="claude-3-5-sonnet-20241022",
             temperature=0.7,
             max_tokens=None,
         )
@@ -122,7 +122,6 @@ class TestModel:
         assert result == "Response"
         mock_provider.generate.assert_called_once_with(
             prompt="Test prompt",
-            model="gpt-4",
             temperature=0.5,
             max_tokens=100,
         )
@@ -146,7 +145,6 @@ class TestModel:
         assert result.age == 30
         mock_provider.generate_structured.assert_called_once_with(
             prompt="Extract: John is 30",
-            model="gpt-4o-mini",
             response_format=Person,
             temperature=0.7,
             max_tokens=None,
@@ -171,7 +169,6 @@ class TestModel:
         assert result.age == 25
         mock_provider.generate_structured.assert_called_once_with(
             prompt="Extract: Jane is 25",
-            model="claude-3-5-sonnet-20241022",
             response_format=Person,
             temperature=0.7,
             max_tokens=None,
@@ -198,7 +195,6 @@ class TestModel:
         assert isinstance(result, Person)
         mock_provider.generate_structured.assert_called_once_with(
             prompt="Extract person",
-            model="gpt-4",
             response_format=Person,
             temperature=0.3,
             max_tokens=500,

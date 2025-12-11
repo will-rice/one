@@ -13,11 +13,19 @@ class Provider(ABC):
     for generating completions with structured outputs.
     """
 
+    def __init__(self, model: str, api_key: str | None = None) -> None:
+        """Initialize the provider with a model identifier.
+
+        Args:
+            model: Model identifier for this provider
+            api_key: Optional API key for the provider
+        """
+        self.model = model
+
     @abstractmethod
     def generate(
         self,
         prompt: str,
-        model: str,
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
@@ -26,7 +34,6 @@ class Provider(ABC):
 
         Args:
             prompt: The input prompt
-            model: Model identifier
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate
             **kwargs: Additional provider-specific parameters
@@ -40,7 +47,6 @@ class Provider(ABC):
     def generate_structured(
         self,
         prompt: str,
-        model: str,
         response_format: Type[BaseModel],
         temperature: float = 0.7,
         max_tokens: int | None = None,
@@ -50,7 +56,6 @@ class Provider(ABC):
 
         Args:
             prompt: The input prompt
-            model: Model identifier
             response_format: Pydantic model class for structured output
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate

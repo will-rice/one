@@ -21,14 +21,14 @@ class TestOpenAIProvider:
     @patch("one.providers.openai.OpenAI")
     def test_init_with_api_key(self, mock_openai: Mock) -> None:
         """Test initialization with explicit API key."""
-        OpenAIProvider(api_key="test-key")
+        OpenAIProvider(model="gpt-4o-mini", api_key="test-key")
         mock_openai.assert_called_once_with(api_key="test-key")
 
     @patch.dict("os.environ", {"OPENAI_API_KEY": "env-key"})
     @patch("one.providers.openai.OpenAI")
     def test_init_with_env_key(self, mock_openai: Mock) -> None:
         """Test initialization with environment variable."""
-        OpenAIProvider()
+        OpenAIProvider(model="gpt-4o-mini")
         mock_openai.assert_called_once_with(api_key="env-key")
 
     @patch("one.providers.openai.OpenAI")
@@ -42,7 +42,7 @@ class TestOpenAIProvider:
         mock_client.chat.completions.create.return_value = mock_response
 
         # Test
-        provider = OpenAIProvider(api_key="test-key")
+        provider = OpenAIProvider(model="gpt-4o-mini", api_key="test-key")
         result = provider.generate("What is the capital of France?")
 
         # Verify
@@ -64,10 +64,9 @@ class TestOpenAIProvider:
         mock_client.chat.completions.create.return_value = mock_response
 
         # Test
-        provider = OpenAIProvider(api_key="test-key")
+        provider = OpenAIProvider(model="gpt-4", api_key="test-key")
         result = provider.generate(
             "Test prompt",
-            model="gpt-4",
             temperature=0.5,
             max_tokens=100,
         )
@@ -91,10 +90,9 @@ class TestOpenAIProvider:
         mock_client.beta.chat.completions.parse.return_value = mock_response
 
         # Test
-        provider = OpenAIProvider(api_key="test-key")
+        provider = OpenAIProvider(model="gpt-4o-mini", api_key="test-key")
         result = provider.generate_structured(
             "Extract: John is 30",
-            model="gpt-4o-mini",
             response_format=Person,
         )
 
@@ -111,14 +109,14 @@ class TestAnthropicProvider:
     @patch("one.providers.anthropic.Anthropic")
     def test_init_with_api_key(self, mock_anthropic: Mock) -> None:
         """Test initialization with explicit API key."""
-        AnthropicProvider(api_key="test-key")
+        AnthropicProvider(model="claude-3-5-sonnet-20241022", api_key="test-key")
         mock_anthropic.assert_called_once_with(api_key="test-key")
 
     @patch.dict("os.environ", {"ANTHROPIC_API_KEY": "env-key"})
     @patch("one.providers.anthropic.Anthropic")
     def test_init_with_env_key(self, mock_anthropic: Mock) -> None:
         """Test initialization with environment variable."""
-        AnthropicProvider()
+        AnthropicProvider(model="claude-3-5-sonnet-20241022")
         mock_anthropic.assert_called_once_with(api_key="env-key")
 
     @patch("one.providers.anthropic.Anthropic")
@@ -132,7 +130,9 @@ class TestAnthropicProvider:
         mock_client.messages.create.return_value = mock_response
 
         # Test
-        provider = AnthropicProvider(api_key="test-key")
+        provider = AnthropicProvider(
+            model="claude-3-5-sonnet-20241022", api_key="test-key"
+        )
         result = provider.generate("What is the capital of France?")
 
         # Verify
@@ -154,10 +154,11 @@ class TestAnthropicProvider:
         mock_client.messages.create.return_value = mock_response
 
         # Test
-        provider = AnthropicProvider(api_key="test-key")
+        provider = AnthropicProvider(
+            model="claude-3-opus-20240229", api_key="test-key"
+        )
         result = provider.generate(
             "Test prompt",
-            model="claude-3-opus-20240229",
             temperature=0.5,
             max_tokens=200,
         )
@@ -180,10 +181,11 @@ class TestAnthropicProvider:
         mock_client.messages.create.return_value = mock_response
 
         # Test
-        provider = AnthropicProvider(api_key="test-key")
+        provider = AnthropicProvider(
+            model="claude-3-5-sonnet-20241022", api_key="test-key"
+        )
         result = provider.generate_structured(
             "Extract: John is 30",
-            model="claude-3-5-sonnet-20241022",
             response_format=Person,
         )
 

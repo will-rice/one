@@ -19,19 +19,20 @@ class OpenAIProvider(Provider):
 
     DEFAULT_MODEL = "gpt-4o-mini"
 
-    def __init__(self, api_key: str | None = None) -> None:
+    def __init__(self, model: str, api_key: str | None = None) -> None:
         """Initialize the OpenAI provider.
 
         Args:
+            model: Model identifier (e.g., "gpt-4o-mini", "gpt-4")
             api_key: OpenAI API key. If not provided, will use OPENAI_API_KEY
                 environment variable.
         """
+        super().__init__(model, api_key)
         self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
 
     def generate(
         self,
         prompt: str,
-        model: str = "gpt-4o-mini",
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
@@ -40,7 +41,6 @@ class OpenAIProvider(Provider):
 
         Args:
             prompt: The input prompt
-            model: Model identifier (default: gpt-4o-mini)
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate
             **kwargs: Additional OpenAI-specific parameters
@@ -49,7 +49,7 @@ class OpenAIProvider(Provider):
             Generated text
         """
         response = self.client.chat.completions.create(
-            model=model,
+            model=self.model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
             max_tokens=max_tokens,
@@ -60,7 +60,6 @@ class OpenAIProvider(Provider):
     def generate_structured(
         self,
         prompt: str,
-        model: str,
         response_format: Type[BaseModel],
         temperature: float = 0.7,
         max_tokens: int | None = None,
@@ -70,7 +69,6 @@ class OpenAIProvider(Provider):
 
         Args:
             prompt: The input prompt
-            model: Model identifier
             response_format: Pydantic model class for structured output
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate
@@ -80,7 +78,7 @@ class OpenAIProvider(Provider):
             Instance of the response_format model with parsed data
         """
         completion = self.client.beta.chat.completions.parse(
-            model=model,
+            model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format=response_format,
             temperature=temperature,

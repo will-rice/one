@@ -152,31 +152,30 @@ from pydantic import BaseModel
 from typing import Type, Any
 
 class CohereProvider(Provider):
-    def __init__(self, api_key: str | None = None) -> None:
-        # Initialize your provider client
+    def __init__(self, model: str, api_key: str | None = None) -> None:
+        super().__init__(model, api_key)
+        # Initialize your provider client (self.model is available)
         pass
     
     def generate(
         self,
         prompt: str,
-        model: str,
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
     ) -> str:
-        # Implement text generation
+        # Implement text generation using self.model
         pass
     
     def generate_structured(
         self,
         prompt: str,
-        model: str,
         response_format: Type[BaseModel],
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
     ) -> BaseModel:
-        # Implement structured output generation
+        # Implement structured output generation using self.model
         pass
 ```
 

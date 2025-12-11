@@ -21,19 +21,20 @@ class AnthropicProvider(Provider):
     DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
     DEFAULT_MAX_TOKENS = 1024
 
-    def __init__(self, api_key: str | None = None) -> None:
+    def __init__(self, model: str, api_key: str | None = None) -> None:
         """Initialize the Anthropic provider.
 
         Args:
+            model: Model identifier (e.g., "claude-3-5-sonnet-20241022")
             api_key: Anthropic API key. If not provided, will use ANTHROPIC_API_KEY
                 environment variable.
         """
+        super().__init__(model, api_key)
         self.client = Anthropic(api_key=api_key or os.getenv("ANTHROPIC_API_KEY"))
 
     def generate(
         self,
         prompt: str,
-        model: str = "claude-3-5-sonnet-20241022",
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
@@ -42,7 +43,6 @@ class AnthropicProvider(Provider):
 
         Args:
             prompt: The input prompt
-            model: Model identifier (default: claude-3-5-sonnet-20241022)
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate (default: 1024)
             **kwargs: Additional Anthropic-specific parameters
@@ -54,7 +54,7 @@ class AnthropicProvider(Provider):
             max_tokens = self.DEFAULT_MAX_TOKENS
 
         response = self.client.messages.create(
-            model=model,
+            model=self.model,
             max_tokens=max_tokens,
             temperature=temperature,
             messages=[{"role": "user", "content": prompt}],
@@ -65,7 +65,6 @@ class AnthropicProvider(Provider):
     def generate_structured(
         self,
         prompt: str,
-        model: str,
         response_format: Type[BaseModel],
         temperature: float = 0.7,
         max_tokens: int | None = None,
@@ -75,7 +74,6 @@ class AnthropicProvider(Provider):
 
         Args:
             prompt: The input prompt
-            model: Model identifier
             response_format: Pydantic model class for structured output
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate (default: 1024)
@@ -98,7 +96,7 @@ class AnthropicProvider(Provider):
         )
 
         response = self.client.messages.create(
-            model=model,
+            model=self.model,
             max_tokens=max_tokens,
             temperature=temperature,
             system=system_prompt,

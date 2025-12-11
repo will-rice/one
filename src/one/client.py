@@ -81,9 +81,9 @@ class Model:
         self._provider: Union[OpenAIProvider, AnthropicProvider]
 
         if self.provider_name == "openai":
-            self._provider = OpenAIProvider(api_key=api_key)
+            self._provider = OpenAIProvider(model=model, api_key=api_key)
         elif self.provider_name == "anthropic":
-            self._provider = AnthropicProvider(api_key=api_key)
+            self._provider = AnthropicProvider(model=model, api_key=api_key)
         else:
             raise ValueError(
                 f"Unknown provider: {self.provider_name}. "
@@ -110,7 +110,6 @@ class Model:
         """
         return self._provider.generate(
             prompt=prompt,
-            model=self.model,
             temperature=temperature,
             max_tokens=max_tokens,
             **kwargs,
@@ -138,7 +137,6 @@ class Model:
         """
         return self._provider.generate_structured(
             prompt=prompt,
-            model=self.model,
             response_format=response_format,
             temperature=temperature,
             max_tokens=max_tokens,
