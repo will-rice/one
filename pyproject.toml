@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "A clean, minimalist library for using multiple LLM providers with structured outputs."
 readme = "README.md"
 authors = [{ name = "Will Rice", email = "wrice20@gmail.com" }]
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
   "anthropic>=0.40.0",
   "openai>=1.58.1",
