@@ -1,24 +1,25 @@
 [project]
-name = "one"
+name = "one-llm"
 version = "0.1.0"
-description = "A general purpose machine learning library."
+description = "A clean, minimalist library for using multiple LLM providers with structured outputs."
 readme = "README.md"
 authors = [{ name = "Will Rice", email = "wrice20@gmail.com" }]
 requires-python = ">=3.12"
 dependencies = [
-  "git-python>=1.0.3",
-  "lightning>=2.5.5",
+  "anthropic>=0.40.0",
+  "openai>=1.58.1",
+  "pydantic>=2.12.2",
+  "python-dotenv>=1.1.1",
+]
+
+[project.optional-dependencies]
+dev = [
   "mypy>=1.15.0",
   "pre-commit>=4.1.0",
-  "pydantic>=2.12.2",
   "pydocstyle>=6.3.0",
   "pytest>=8.3.4",
-  "python-dotenv>=1.1.1",
+  "pytest-asyncio>=0.24.0",
   "ruff>=0.9.7",
-  "torch>=2.8.0",
-  "torchaudio>=2.8.0",
-  "torchvision>=0.23.0",
-  "wandb>=0.22.2",
 ]
 
 [build-system]
@@ -33,7 +34,7 @@ known-first-party = ["one"]
 
 [tool.ruff.lint]
 select = ["C", "E", "F", "I", "W", "D", "N", "B", "PTH", "ANN"]
-ignore = ["D107"]
+ignore = ["D107", "ANN401"]
 exclude = [".venv"]
 
 [tool.ruff.lint.pydocstyle]
@@ -47,5 +48,4 @@ ignore_missing_imports = true
 follow_imports_for_stubs = true
 exclude = [".venv"]
 
-[project.scripts]
-train = "one.scripts.train:main"
+
