@@ -3,8 +3,8 @@
 import torch
 from lightning.pytorch import LightningModule
 
-from template.config import Config
-from template.datasets import Batch
+from one.config import Config
+from one.datasets import Batch
 
 
 class BaseLightningModule(LightningModule):
