@@ -212,4 +212,3 @@ def test_generate_structured_with_custom_params(mock_provider_class: Mock) -> No
         temperature=0.3,
         max_tokens=500,
     )
-

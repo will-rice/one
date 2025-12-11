@@ -156,7 +156,7 @@ class CohereProvider(Provider):
         super().__init__(model, api_key)
         # Initialize your provider client (self.model is available)
         pass
-    
+
     def generate(
         self,
         prompt: str,
@@ -240,10 +240,10 @@ Contributions are welcome! Please:
 
 ## Supported Providers
 
-| Provider | Status | Structured Outputs | Default Model |
-|----------|--------|-------------------|---------------|
-| OpenAI | ✅ Supported | ✅ Native | gpt-4o-mini |
-| Anthropic | ✅ Supported | ✅ JSON Schema | claude-3-5-sonnet-20241022 |
+| Provider  | Status       | Structured Outputs | Default Model              |
+| --------- | ------------ | ------------------ | -------------------------- |
+| OpenAI    | ✅ Supported | ✅ Native          | gpt-4o-mini                |
+| Anthropic | ✅ Supported | ✅ JSON Schema     | claude-3-5-sonnet-20241022 |
 
 ## Roadmap
 
