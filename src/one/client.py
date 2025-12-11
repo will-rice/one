@@ -1,19 +1,36 @@
 """Unified client for multiple LLM providers."""
 
-from typing import Any, Literal, Type, Union
+from typing import Any, Type, Union
 
 from pydantic import BaseModel
 
 from one.providers.anthropic import AnthropicProvider
 from one.providers.openai import OpenAIProvider
 
-ProviderType = Literal["openai", "anthropic"]
 
-# Default models for each provider
-DEFAULT_MODELS: dict[ProviderType, str] = {
-    "openai": OpenAIProvider.DEFAULT_MODEL,
-    "anthropic": AnthropicProvider.DEFAULT_MODEL,
-}
+def _detect_provider(model: str) -> str:
+    """Detect provider from model name.
+
+    Args:
+        model: Model identifier
+
+    Returns:
+        Provider name ("openai" or "anthropic")
+
+    Raises:
+        ValueError: If provider cannot be detected from model name
+    """
+    model_lower = model.lower()
+    if model_lower.startswith(("gpt-", "o1-", "text-")):
+        return "openai"
+    elif model_lower.startswith("claude-"):
+        return "anthropic"
+    else:
+        raise ValueError(
+            f"Cannot detect provider from model name: {model}. "
+            f"Model names should start with 'gpt-', 'o1-', 'text-' (OpenAI) "
+            f"or 'claude-' (Anthropic)"
+        )
 
 
 class Model:
@@ -21,11 +38,12 @@ class Model:
 
     This class provides a simple interface to generate text and structured outputs
     from different LLM providers (OpenAI, Anthropic) using a consistent API.
+    The provider is automatically detected from the model name.
 
     Example:
         Basic text generation:
         ```python
-        model = Model(provider="openai")
+        model = Model(model="gpt-4o-mini")
         response = model.generate("What is the capital of France?")
         ```
 
@@ -37,7 +55,7 @@ class Model:
             name: str
             age: int
 
-        model = Model(provider="openai")
+        model = Model(model="gpt-4o-mini")
         person = model.generate_structured(
             "Extract person info: John is 30 years old",
             response_format=Person
@@ -47,32 +65,34 @@ class Model:
 
     def __init__(
         self,
-        provider: ProviderType = "openai",
+        model: str = "gpt-4o-mini",
         api_key: str | None = None,
     ) -> None:
-        """Initialize the model with a specific provider.
+        """Initialize the model with a specific model name.
 
         Args:
-            provider: The LLM provider to use ("openai" or "anthropic")
+            model: Model identifier (e.g., "gpt-4o-mini", "claude-3-5-sonnet-20241022").
+                Provider is automatically detected from the model name.
             api_key: Optional API key for the provider. If not provided,
                 will use environment variables.
         """
-        self.provider_name = provider
+        self.model = model
+        self.provider_name = _detect_provider(model)
         self._provider: Union[OpenAIProvider, AnthropicProvider]
 
-        if provider == "openai":
+        if self.provider_name == "openai":
             self._provider = OpenAIProvider(api_key=api_key)
-        elif provider == "anthropic":
+        elif self.provider_name == "anthropic":
             self._provider = AnthropicProvider(api_key=api_key)
         else:
             raise ValueError(
-                f"Unknown provider: {provider}. Supported providers: openai, anthropic"
+                f"Unknown provider: {self.provider_name}. "
+                f"Supported providers: openai, anthropic"
             )
 
     def generate(
         self,
         prompt: str,
-        model: str | None = None,
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
@@ -81,7 +101,6 @@ class Model:
 
         Args:
             prompt: The input prompt
-            model: Model identifier. If not provided, uses provider default.
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate
             **kwargs: Additional provider-specific parameters
@@ -89,12 +108,9 @@ class Model:
         Returns:
             Generated text
         """
-        if model is None:
-            model = DEFAULT_MODELS[self.provider_name]
-
         return self._provider.generate(
             prompt=prompt,
-            model=model,
+            model=self.model,
             temperature=temperature,
             max_tokens=max_tokens,
             **kwargs,
@@ -104,7 +120,6 @@ class Model:
         self,
         prompt: str,
         response_format: Type[BaseModel],
-        model: str | None = None,
         temperature: float = 0.7,
         max_tokens: int | None = None,
         **kwargs: Any,
@@ -114,7 +129,6 @@ class Model:
         Args:
             prompt: The input prompt
             response_format: Pydantic model class for structured output
-            model: Model identifier. If not provided, uses provider default.
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum tokens to generate
             **kwargs: Additional provider-specific parameters
@@ -122,12 +136,9 @@ class Model:
         Returns:
             Instance of the response_format model with parsed data
         """
-        if model is None:
-            model = DEFAULT_MODELS[self.provider_name]
-
         return self._provider.generate_structured(
             prompt=prompt,
-            model=model,
+            model=self.model,
             response_format=response_format,
             temperature=temperature,
             max_tokens=max_tokens,

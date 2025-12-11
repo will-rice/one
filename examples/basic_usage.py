@@ -21,11 +21,9 @@ def main() -> None:
     # Example 1: Simple text generation with OpenAI
     print("\n1. Simple text generation with OpenAI:")
     print("-" * 50)
-    model = Model(provider="openai")
+    model = Model(model="gpt-4o-mini")
     try:
-        response = model.generate(
-            "What is the capital of France? Answer in one word."
-        )
+        response = model.generate("What is the capital of France? Answer in one word.")
         print(f"Response: {response}")
     except Exception as e:
         print(f"Error (expected if no API key): {e}")
@@ -47,7 +45,7 @@ def main() -> None:
     # Example 3: Using Anthropic
     print("\n3. Simple text generation with Anthropic:")
     print("-" * 50)
-    model_anthropic = Model(provider="anthropic")
+    model_anthropic = Model(model="claude-3-5-sonnet-20241022")
     try:
         response = model_anthropic.generate(
             "What is the capital of Japan? Answer in one word."

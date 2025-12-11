@@ -30,13 +30,13 @@ pip install one[dev]
 ```python
 from one import Model
 
-# Using OpenAI
-model = Model(provider="openai")
+# Using OpenAI (provider auto-detected from model name)
+model = Model(model="gpt-4o-mini")
 response = model.generate("What is the capital of France?")
 print(response)  # "Paris"
 
-# Using Anthropic
-model = Model(provider="anthropic")
+# Using Anthropic (provider auto-detected from model name)
+model = Model(model="claude-3-5-sonnet-20241022")
 response = model.generate("What is the capital of France?")
 print(response)  # "Paris"
 ```
@@ -52,7 +52,7 @@ class Person(BaseModel):
     age: int
     occupation: str
 
-model = Model(provider="openai")
+model = Model(model="gpt-4o-mini")
 person = model.generate_structured(
     prompt="Extract information: John is 30 years old and works as a software engineer",
     response_format=Person
@@ -83,23 +83,21 @@ cp .env.example .env
 
 ### Advanced Usage
 
-#### Custom Model Selection
+#### Custom Parameters
 
 ```python
-# Use a specific OpenAI model
-model = Model(provider="openai")
+# Use a specific OpenAI model with custom parameters
+model = Model(model="gpt-4")
 response = model.generate(
     prompt="Explain quantum computing",
-    model="gpt-4",
     temperature=0.5,
     max_tokens=500
 )
 
-# Use a specific Anthropic model
-model = Model(provider="anthropic")
+# Use a specific Anthropic model with custom parameters
+model = Model(model="claude-3-opus-20240229")
 response = model.generate(
     prompt="Explain quantum computing",
-    model="claude-3-opus-20240229",
     temperature=0.5,
     max_tokens=500
 )
@@ -121,7 +119,7 @@ class Project(BaseModel):
     description: str
     tasks: List[Task]
 
-model = Model(provider="openai")
+model = Model(model="gpt-4o-mini")
 project = model.generate_structured(
     prompt="""
     Create a project plan for building a web application:
@@ -130,8 +128,7 @@ project = model.generate_structured(
     - API development
     - Frontend implementation
     """,
-    response_format=Project,
-    model="gpt-4o-mini"
+    response_format=Project
 )
 
 for task in project.tasks:
@@ -181,47 +178,45 @@ class CohereProvider:
         pass
 ```
 
-3. Add the provider to `src/one/client.py` in the `Model.__init__` method
-4. Update the `ProviderType` literal with the new provider name
+3. Update the `_detect_provider` function in `src/one/client.py` to recognize your provider's model names
+4. Add the provider initialization logic to `Model.__init__`
 
 ## Development
 
 ### Running Tests
 
 ```bash
-uv run pytest
+pip install -e ".[dev]"
+pytest
 ```
 
 ### Type Checking
 
 ```bash
-uv run mypy src/
+mypy src/
 ```
 
 ### Linting and Formatting
 
 ```bash
-uv run ruff check src/
-uv run ruff format src/
+ruff check src/
+ruff format src/
 ```
 
 ### Pre-commit Hooks
 
-Pre-commit hooks will automatically run on every commit to ensure code quality. To run manually:
-
 ```bash
-uv run pre-commit run --all-files
+pre-commit install
+pre-commit run --all-files
 ```
 
 ## Dependencies
 
 Core dependencies:
 
-- **PyTorch**: Deep learning framework (with GPU support)
-- **Lightning**: High-level PyTorch wrapper
-- **Pydantic**: Data validation and configuration
-- **Wandb**: Experiment tracking
-- **python-dotenv**: Environment variable management
+- **openai**: OpenAI API client
+- **anthropic**: Anthropic API client
+- **pydantic**: Data validation and type safety
 
 Development tools:
 
@@ -229,16 +224,6 @@ Development tools:
 - **mypy**: Static type checker
 - **pytest**: Testing framework
 - **pre-commit**: Git hooks for code quality
-
-## Build System
-
-This project uses `uv_build` as the build backend, which is significantly faster than traditional build systems like setuptools or hatchling.
-
-To build the project:
-
-```bash
-uv build
-```
 
 ## Why "One"?
 
