@@ -16,6 +16,9 @@ class AnthropicProvider:
     using Pydantic models.
     """
 
+    DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
+    DEFAULT_MAX_TOKENS = 1024
+
     def __init__(self, api_key: str | None = None) -> None:
         """Initialize the Anthropic provider.
 
@@ -46,7 +49,7 @@ class AnthropicProvider:
             Generated text
         """
         if max_tokens is None:
-            max_tokens = 1024
+            max_tokens = self.DEFAULT_MAX_TOKENS
 
         response = self.client.messages.create(
             model=model,
@@ -80,7 +83,7 @@ class AnthropicProvider:
             Instance of the response_format model with parsed data
         """
         if max_tokens is None:
-            max_tokens = 1024
+            max_tokens = self.DEFAULT_MAX_TOKENS
 
         # Get JSON schema from Pydantic model
         schema = response_format.model_json_schema()

@@ -15,6 +15,8 @@ class OpenAIProvider:
     using Pydantic models.
     """
 
+    DEFAULT_MODEL = "gpt-4o-mini"
+
     def __init__(self, api_key: str | None = None) -> None:
         """Initialize the OpenAI provider.
 

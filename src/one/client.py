@@ -9,6 +9,12 @@ from one.providers.openai import OpenAIProvider
 
 ProviderType = Literal["openai", "anthropic"]
 
+# Default models for each provider
+DEFAULT_MODELS: dict[ProviderType, str] = {
+    "openai": OpenAIProvider.DEFAULT_MODEL,
+    "anthropic": AnthropicProvider.DEFAULT_MODEL,
+}
+
 
 class Model:
     """Unified model client that supports multiple LLM providers.
@@ -84,11 +90,7 @@ class Model:
             Generated text
         """
         if model is None:
-            # Use provider defaults
-            if self.provider_name == "openai":
-                model = "gpt-4o-mini"
-            elif self.provider_name == "anthropic":
-                model = "claude-3-5-sonnet-20241022"
+            model = DEFAULT_MODELS[self.provider_name]
 
         return self._provider.generate(
             prompt=prompt,
@@ -121,11 +123,7 @@ class Model:
             Instance of the response_format model with parsed data
         """
         if model is None:
-            # Use provider defaults
-            if self.provider_name == "openai":
-                model = "gpt-4o-mini"
-            elif self.provider_name == "anthropic":
-                model = "claude-3-5-sonnet-20241022"
+            model = DEFAULT_MODELS[self.provider_name]
 
         return self._provider.generate_structured(
             prompt=prompt,
