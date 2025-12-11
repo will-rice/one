@@ -14,13 +14,13 @@ A clean, minimalist library for using multiple LLM providers with structured out
 ## Installation
 
 ```bash
-pip install one-llm
+pip install one-llm-lib
 ```
 
 Or with development dependencies:
 
 ```bash
-pip install one-llm[dev]
+pip install one-llm-lib[dev]
 ```
 
 ## Quick Start
