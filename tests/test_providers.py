@@ -136,9 +136,7 @@ def test_anthropic_generate(mock_anthropic: Mock) -> None:
     mock_client.messages.create.return_value = mock_response
 
     # Test
-    provider = AnthropicProvider(
-        model="claude-3-5-sonnet-20241022", api_key="test-key"
-    )
+    provider = AnthropicProvider(model="claude-3-5-sonnet-20241022", api_key="test-key")
     result = provider.generate("What is the capital of France?")
 
     # Verify
@@ -161,9 +159,7 @@ def test_anthropic_generate_with_custom_params(mock_anthropic: Mock) -> None:
     mock_client.messages.create.return_value = mock_response
 
     # Test
-    provider = AnthropicProvider(
-        model="claude-3-opus-20240229", api_key="test-key"
-    )
+    provider = AnthropicProvider(model="claude-3-opus-20240229", api_key="test-key")
     result = provider.generate(
         "Test prompt",
         temperature=0.5,
@@ -189,9 +185,7 @@ def test_anthropic_generate_structured(mock_anthropic: Mock) -> None:
     mock_client.messages.create.return_value = mock_response
 
     # Test
-    provider = AnthropicProvider(
-        model="claude-3-5-sonnet-20241022", api_key="test-key"
-    )
+    provider = AnthropicProvider(model="claude-3-5-sonnet-20241022", api_key="test-key")
     result = provider.generate(
         "Extract: John is 30",
         response_format=Person,
@@ -205,4 +199,3 @@ def test_anthropic_generate_structured(mock_anthropic: Mock) -> None:
     call_kwargs = mock_client.messages.create.call_args.kwargs
     assert "system" in call_kwargs
     assert "JSON" in call_kwargs["system"]
-
