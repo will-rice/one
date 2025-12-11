@@ -209,7 +209,7 @@ ruff format src/
 
 ```bash
 pre-commit install
-pre-commit run --all-files
+pre-commit run -a
 ```
 
 ## Dependencies
