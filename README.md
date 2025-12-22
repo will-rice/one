@@ -2,6 +2,12 @@
 
 A clean, minimalist library for using multiple LLM providers with structured outputs.
 
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://img.shields.io/badge/pypi-v0.1.0-blue.svg)](https://pypi.org/project/one-llm-lib/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+[![Type Checked](https://img.shields.io/badge/type--checked-mypy-blue.svg)](https://mypy-lang.org/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+
 ## Features
 
 - **Multiple Providers**: Support for OpenAI and Anthropic with a unified interface
